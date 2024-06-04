@@ -2,7 +2,7 @@
 owner:enterusrname@github.com
 version:0.01a
 cTime:2024-6-3 23:12
-ltime:2024-6-3 23:12
+ltime:2024-6-4 10:07
 """
 import tkinter as tk #导入Tk
 m=tk.Tk() #Tk对象"m"
