@@ -1,12 +1,13 @@
 """
 owner:enterusrname@github.com
-version:0.03a
+version:0.03b
 cTime:2024-6-3 23:12
-ltime:2024-6-6 07:46
+ltime:2024-6-6 09:33
 """
 import tkinter as tk
 w=tk.Tk()
-tk.Frame(w).pack()
+fa=tk.Frame(w)
+fa.pack()
 e=tk.Entry(fa,show="*")
 e.pack()
 def job():
