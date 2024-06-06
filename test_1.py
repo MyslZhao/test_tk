@@ -1,8 +1,8 @@
 """
 owner:enterusrname@github.com
-version:0.03e
+version:0.03f
 cTime:2024-6-3 23:12
-ltime:2024-6-6 09:43
+ltime:2024-6-6 10:08
 """
 import tkinter as tk
 w=tk.Tk()
@@ -16,5 +16,5 @@ def job():
     return 0
 
 l=tk.Label(fa,anchor="nw",bd=4,cursor="cross",text="Hello world!")
-tk.Button(w,command="job()",text="点一下试试").pack()
+tk.Button(w,command=job,text="点一下试试").pack()
 w.mainloop()
