@@ -1,9 +1,3 @@
-"""
-owner:enterusrname@github.com
-version:0.03g
-cTime:2024-6-3 23:12
-ltime:2024-6-6 10:19
-"""
 import tkinter as tk
 w=tk.Tk()
 fa=tk.Frame(w)
