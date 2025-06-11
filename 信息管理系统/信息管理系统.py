@@ -3,7 +3,7 @@ import tkinter as tk
 #version:0.1
 DATA={}
 
-with open("./login.json","r",encoding="utf-8") as f:
+with open("./信息管理系统/login.json","r",encoding="utf-8") as f:
     login_data=f.read()
     DATA=login_data
 
