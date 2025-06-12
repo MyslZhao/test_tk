@@ -1,25 +1,54 @@
-import tkinter as tk
+import tkinter as tk,json as js
 # -*- coding: utf-8 -*-
 #version:0.2
 DATA={}
 
 with open("./信息管理系统/login.json","r",encoding="utf-8") as f:
     login_data=f.read()
-    DATA=login_data
+    DATA=js.loads(login_data)
+    print(DATA)
+    f.close()
 
-def main_window():
-    def user_login():
-        name_value=name.get()
-        password_value=password.get()
-        print(name_value,password_value)
-        pass
+def user_signup(old_frame):
+    old_frame.destroy()
+    name_value=name.get()
+    password_value=password.get()
+    print(name_value, password_value)
+    # 注册功能待实现
+    
+    pass
 
-    #main_win主窗口初始化
-    main_win=tk.Tk()
-    main_win.geometry("500x500+500+250")
-    main_win.title("信息管理系统")
-    #main_frame主窗口的框架初始化
-    main_frame=tk.Frame(main_win,height=500,width=500,relief="groove",bd=0,bg="blue")
+def user_login(name,password):
+    name_value=name.get()
+    password_value=password.get()
+    print(name_value,password_value)
+    pass
+
+def signup():
+    # login_frame登录框架初始化
+    login_frame = tk.Frame(main_frame, height=500, width=500, relief="groove", bd=5, bg="white")
+    # 添加标签控件title_label,name_label和pwd_label
+    title_label = tk.Label(login_frame, text="信息管理系统", font="courior 20 bold", bd=10, bg="white", fg="black")
+    title_label.grid(row=0, column=2, columnspan=3, sticky="w", padx=10, pady=20)
+    name_label = tk.Label(login_frame, text="用户名:", font="courior", bd=10, bg="white", fg="black")
+    name_label.grid(row=1, column=2, sticky="w", padx=10, pady=20)
+    pwd_label = tk.Label(login_frame, text="密码:", font="courior", bd=10, bg="white", fg="black")
+    pwd_label.grid(row=2, column=2, sticky="w", padx=10, pady=20)
+    # 添加输入控件name
+    name = tk.Entry(login_frame, bd=10, font="courior", bg="white")
+    name.grid(row=1, column=3, columnspan=2, sticky="w", padx=20, pady=20)
+    # 添加输入控件password和submit
+    password = tk.Entry(login_frame, bd=10, font="courior", bg="white", show="*")
+    password.grid(row=2, column=3, columnspan=2)
+    submit = tk.Button(login_frame, command=user_login, text="登录", bd=10)
+    submit.grid(row=3, column=2, columnspan=3, ipadx=30)
+    main_frame.pack(fill=tk.BOTH, expand=True)
+    login_frame.pack(expand=True)
+    # 添加signup按钮
+    signup = tk.Button(login_frame, text="注册", bd=10, command=user_signup)
+    signup.grid(row=4, column=2, columnspan=3, ipadx=30, pady=20)
+
+def login():
     #login_frame登录框架初始化
     login_frame=tk.Frame(main_frame,height=500,width=500,relief="groove",bd=5,bg="white")
     #添加标签控件title_label,name_label和pwd_label
@@ -35,10 +64,19 @@ def main_window():
     #添加输入控件password和submit
     password=tk.Entry(login_frame,bd=10,font="courior",bg="white",show="*") 
     password.grid(row=2,column=3,columnspan=2)
-    submit=tk.Button(login_frame,command=user_login,text="登录",bd=10)
+    submit=tk.Button(login_frame,command=lambda:user_login(name,password),relief="flat",bg="blue",text="登录",bd=10)
     submit.grid(row=3,column=2,columnspan=3,ipadx=30)
-    main_frame.pack(fill=tk.BOTH,expand=True)
     login_frame.pack(expand=True)
-    main_win.mainloop()
+    #添加signup按钮
+    signup=tk.Button(login_frame,text="没有账号？去注册",bd=10,relief="flat",bg="white",command=lambda:signup())
+    signup.grid(row=4,column=2,columnspan=3,ipadx=30,pady=20)
 
-main_window()
+#main_win主窗口初始化
+main_win=tk.Tk()
+main_win.geometry("500x500+500+250")
+main_win.title("信息管理系统")
+#main_frame主窗口的框架初始化
+main_frame=tk.Frame(main_win,height=500,width=500,relief="groove",bd=0,bg="blue")
+main_frame.pack(fill=tk.BOTH,expand=True)
+login()
+main_win.mainloop()
