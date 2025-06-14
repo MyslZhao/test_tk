@@ -1,12 +1,14 @@
 import tkinter as tk,json as js
-# -*- coding: utf-8 -*-
-#version:0.2
-DATA={}
+# -*- coding: unicode -*-
+DATA=[]
 
 with open("./信息管理系统/login.json","r",encoding="utf-8") as f:
     login_data=f.read()
-    DATA=js.loads(login_data)
-    print(DATA)
+    cache=js.loads(login_data)
+    print(cache)
+    #for i in cache:
+    #    DATA.append(list())
+    DATA=cache
     f.close()
 
 def user_signup(name, password):
@@ -20,7 +22,12 @@ def user_signup(name, password):
 def user_login(name,password):
     name_value=name.get()
     password_value=password.get()
-    print(name_value,password_value)
+    #print(name_value,password_value)
+    for i in DATA:
+        if name_value == i["name"] and password_value == i["password"]:
+            print("登录成功")
+            if i["root"] == True:
+                management()
     pass
 
 def signup(old_frame):
@@ -74,6 +81,12 @@ def login(old_frame=None):
     #添加signup按钮
     signup_button=tk.Button(login_frame,text="没有账号？去注册",bd=10,relief="flat",bg="white",command=lambda:signup(login_frame))
     signup_button.grid(row=4,column=2,columnspan=3,ipadx=30,pady=20)
+
+def management():
+    # 管理功能待实现
+    management_win=tk.Toplevel(main_win)
+    management_win.geometry("500x500+500+250")
+    pass
 
 #main_win主窗口初始化
 main_win=tk.Tk()
