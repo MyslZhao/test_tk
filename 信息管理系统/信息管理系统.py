@@ -1,8 +1,10 @@
 import tkinter as tk,json as js
 # -*- coding: unicode -*-
 DATA=[]
+STATUE=0
+PEOPLE={}
 
-with open("./信息管理系统/login.json","r",encoding="utf-8") as f:
+with open("./信息管理系统/login.bin","r",encoding="utf-8") as f:
     login_data=f.read()
     cache=js.loads(login_data)
     print(cache)
@@ -20,6 +22,7 @@ def user_signup(name, password):
     pass
 
 def user_login(name,password):
+    global STATUE,PEOPLE
     name_value=name.get()
     password_value=password.get()
     #print(name_value,password_value)
@@ -27,7 +30,13 @@ def user_login(name,password):
         if name_value == i["name"] and password_value == i["password"]:
             print("登录成功")
             if i["root"] == True:
-                management()
+                STATUE = 1
+            else:
+                STATUE = 2
+            PEOPLE = i
+            main_win.destroy()
+        else:
+            print("登录失败")
     pass
 
 def signup(old_frame):
@@ -82,10 +91,18 @@ def login(old_frame=None):
     signup_button=tk.Button(login_frame,text="没有账号？去注册",bd=10,relief="flat",bg="white",command=lambda:signup(login_frame))
     signup_button.grid(row=4,column=2,columnspan=3,ipadx=30,pady=20)
 
-def management():
+def user(people):
+    pass
+
+def management(people):
     # 管理功能待实现
     management_win=tk.Toplevel(main_win)
     management_win.geometry("500x500+500+250")
+    management_win.title("后台管理")
+    manager_name=tk.Label(management_win,text="欢迎，管理员"+people["name"],font="courior 20 bold",bd=10,bg="white",fg="black")
+    manager_name.grid(row=0,column=1,columnspan=3,sticky="w",padx=10,pady=20)
+    # 其他管理功能的实现
+    management_win.mainloop()
     pass
 
 #main_win主窗口初始化
@@ -97,3 +114,11 @@ main_frame=tk.Frame(main_win,height=500,width=500,relief="groove",bd=0,bg="blue"
 main_frame.pack(fill=tk.BOTH,expand=True)
 login()
 main_win.mainloop()
+if STATUE == 1:
+    del STATUE
+    management(PEOPLE) 
+elif STATUE == 2:
+    del STATUE
+    user(PEOPLE)
+else:
+    pass
