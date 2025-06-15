@@ -1,28 +1,34 @@
-import tkinter as tk,json as js
+import tkinter as tk
+from tkinter import ttk
+import json as js
 # -*- coding: unicode -*-
 DATA=[]
 STATUE=0
 PEOPLE={}
 
-with open("./信息管理系统/login.bin","r",encoding="utf-8") as f:
-    login_data=f.read()
+with open("./信息管理系统/login.bin","r",encoding="utf-8") as file:
+    login_data=file.read()
     cache=js.loads(login_data)
     print(cache)
     #for i in cache:
     #    DATA.append(list())
     DATA=cache
-    f.close()
+    file.close()
 
 def user_signup(name, password):
+    """
+    用户注册功能实现
+    """
     name_value=name.get()
     password_value=password.get()
     print(name_value, password_value)
     # 注册功能待实现
-    
-    pass
 
 def user_login(name,password):
-    global STATUE,PEOPLE
+    """
+    用户登录功能实现
+    """
+    global STATUE,PEOPLE #!noqa: W0603
     name_value=name.get()
     password_value=password.get()
     #print(name_value,password_value)
@@ -37,9 +43,11 @@ def user_login(name,password):
             main_win.destroy()
         else:
             print("登录失败")
-    pass
 
 def signup(old_frame):
+    """
+    注册界面设计
+    """
     old_frame.destroy()
     # login_frame登录框架初始化
     login_frame = tk.Frame(main_frame, height=500, width=500, relief="groove", bd=5, bg="white")
@@ -66,6 +74,9 @@ def signup(old_frame):
     login_frame.pack(expand=True)
 
 def login(old_frame=None):
+    """
+    登录界面设计
+    """
     #判断是否返回自注册页面还是初次加载
     if old_frame is not None:
         old_frame.destroy()
@@ -82,7 +93,7 @@ def login(old_frame=None):
     name=tk.Entry(login_frame,bd=10,font="courior",bg="white")
     name.grid(row=1,column=3,columnspan=2,sticky="w",padx=20,pady=20)
     #添加输入控件password和submit
-    password=tk.Entry(login_frame,bd=10,font="courior",bg="white",show="*") 
+    password=tk.Entry(login_frame,bd=10,font="courior",bg="white",show="*")
     password.grid(row=2,column=3,columnspan=2)
     submit=tk.Button(login_frame,command=lambda:user_login(name,password),relief="flat",bg="blue",text="登录",bd=10)
     submit.grid(row=3,column=2,columnspan=3,ipadx=30)
@@ -91,16 +102,35 @@ def login(old_frame=None):
     signup_button=tk.Button(login_frame,text="没有账号？去注册",bd=10,relief="flat",bg="white",command=lambda:signup(login_frame))
     signup_button.grid(row=4,column=2,columnspan=3,ipadx=30,pady=20)
 
-def user(people):
+def user():
+    global PEOPLE
     pass
 
-def management(people):
-    # 管理功能待实现
-    management_win=tk.Toplevel(main_win)
+def management():
+    """
+    后台管理界面设计及功能实现
+    """
+    global PEOPLE
+    def logout():
+        pass
+    
+    management_win=tk.Tk()
     management_win.geometry("500x500+500+250")
     management_win.title("后台管理")
-    manager_name=tk.Label(management_win,text="欢迎，管理员"+people["name"],font="courior 20 bold",bd=10,bg="white",fg="black")
-    manager_name.grid(row=0,column=1,columnspan=3,sticky="w",padx=10,pady=20)
+    management_frame=tk.Frame(management_win,height=500,width=500,relief="groove",bd=0,bg="blue")
+    management_frame.pack(fill=tk.BOTH,expand=True)
+    manager_name=tk.Label(management_frame,text="欢迎，管理员"+PEOPLE["name"],font="courior 20 bold",bd=10,bg="white",fg="black")
+    manager_name.pack(fill=tk.X, padx=10, pady=10)
+    user_list=ttk.Treeview(management_frame, columns=("name", "password", "root"), show="headings")
+    user_list.heading(column="id",test="ID")
+    user_list.heading("name", text="用户名")
+    user_list.heading("password", text="密码")
+    user_list.heading("root", text="管理员")
+    user_list.column("id", width=50, anchor="center")
+    user_list.column("name", width=150, anchor="center")
+    user_list.column("password", width=150, anchor="center")
+    user_list.column("root", width=100, anchor="center")
+    user_list.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
     # 其他管理功能的实现
     management_win.mainloop()
     pass
@@ -116,9 +146,9 @@ login()
 main_win.mainloop()
 if STATUE == 1:
     del STATUE
-    management(PEOPLE) 
+    management() 
 elif STATUE == 2:
     del STATUE
-    user(PEOPLE)
+    user()
 else:
     pass
