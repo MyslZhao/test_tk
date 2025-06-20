@@ -1,5 +1,6 @@
 import pygame as pg
 from random import choice
+from time import sleep
 # -*- coding: utf-8 -*-
 #相关数据与图片初始化
 LOCA_ARGC=(554,532)
@@ -12,42 +13,74 @@ COLOR={0:None,1:'白方',2:'黑方'}  # 定义颜色字典
 COLOR_PIC={0:None,1:WHITE_PIC,2:BLACK_PIC}
 
 class board:
-    start_point=(20,20)
+    statue_board=[]
+    start_point=(47,49)
     pix_size = (0,0)
     size = (15, 15)
+    x_dist = 0
+    y_dist = 0
     x_loca=[]
     y_loca=[]
-    bias = 5
+    bias = 12
     player = []  # 玩家列表，存储两个玩家对象
     def __init__(self, size: tuple[int, int], player1: 'player', player2: 'player'):
+        """
+         棋盘对象初始化
+        """
+        cache=[]
+        for i in range(15):
+            cache.append(0)
+        for j in range(15):
+            self.statue_board.append(cache)
+        del cache
         self.pix_size = size  # 设置棋盘像素大小
-        x_dist=int(self.pix_size[0] / (self.size[0]-1))
-        y_dist=int(self.pix_size[0] / (self.size[0]-1))
-        for i in range(14):
-            self.x_loca.append(x_dist*i)
-            self.y_loca.append(i*y_dist)
+        self.x_dist=int(self.pix_size[0] / (self.size[0]-1)) #计算棋格宽度
+        self.y_dist=int(self.pix_size[0] / (self.size[0]-1)) #计算棋格高度
+        for i in range(15):
+            # 位置序号
+            self.x_loca.append(i)
+            self.y_loca.append(i)
         self.player.append(player1)  # 添加玩家1
         self.player.append(player2)  # 添加玩家2
-        return 0
+        return None
     def check(self):
-        pass
-    def place_piece(self,player:'player',pix_loca:tuple[int,int]):
-        for x in self.x_loca:
-            for y in self.y_loca:
-                m=(x-self.bias+self.start_point[0]-pix_loca[0])*(x+self.bias+self.start_point[0]-pix_loca[0])
-                n=(y-self.bias+self.start_point[1]-pix_loca[1])*(y+self.bias+self.start_point[1]-pix_loca[1])
-                if m < 0 and n < 0:
-                    surface.blit(COLOR_PIC[player.color], (x+self.start_point[0] - 32, y+self.start_point[1] - 32))
-
-    def start(self):
+        return False
+    def place_piece(self,player:'player',surface):
+        done = False
+        statue = []
+        while not done:
+            pix_loca=list(player.place_piece())
+            if str(pix_loca[0]) == 'False':
+                done=True
+                statue=[False,False]
+                continue
+            for x in self.x_loca:
+                for y in self.y_loca:
+                    m=(x*self.x_dist-self.bias+self.start_point[0]-pix_loca[0])*(x+self.bias+self.start_point[0]-pix_loca[0])
+                    n=(y*self.y_dist-self.bias+self.start_point[1]-pix_loca[1])*(y+self.bias+self.start_point[1]-pix_loca[1])
+                    print(m,n)
+                    if m <= 0 and n <= 0:
+                        print(player.color)
+                        surface.blit(COLOR_PIC[player.color], 
+                                     (x+self.start_point[0] - player.bias[player.color-1][0], 
+                                      y+self.start_point[1] - player.bias[player.color-1][1]))
+                        pg.display.update()
+                        done =True
+                        statue=[x,y]
+                        continue
+        return statue
+        
+    def start(self,surface):
         turn=[False,False]
         turn[choice([0,1])]=True
         game=True
         while game:
-            for i in range(1):
-                if turn[i]:
-                    self.place_piece(self.player[i],self.player[i].place_piece())
+            sleep(1)
+            for m in range(2):
+                if turn[m]:
+                    self.place_piece(self.player[m],surface)
                     if self.check():
+                        print("checked")
                         game=False
                     turn.reverse()
         self.result()
@@ -59,6 +92,7 @@ class player:
     """玩家类"""
     score=0
     color=0
+    bias=[[30,45],[20,30]]
     turn = False
     def __init__(self, color:int):
         self.color = color
@@ -68,7 +102,18 @@ class player:
     def get_score(self):
         return str(self.score)
     def place_piece(self):
-        loca=pg.mouse.get_pos()  # 获取鼠标位置
+        print('place')
+        loca=()
+        done=False
+        while not done:
+            for event in pg.event.get():
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    print('get')
+                    loca = pg.mouse.get_pos()
+                    done = True
+                elif event.type == pg.QUIT:
+                    loca =(False,False)
+                    done = True
         return loca
         
 def welcome_msg():
@@ -97,7 +142,6 @@ def welcome_msg():
                 x=(button_bg.x+button_bg.width-loca[0])*(button_bg.x-loca[0])
                 y=(button_bg.y+button_bg.height-loca[1])*(button_bg.y-loca[1])
                 if x < 0 and y < 0:
-                    print("out")
                     surface.fill((0,0,0))
                     pg.display.flip()
                     start=True
@@ -110,7 +154,7 @@ def main():
     white=player(1)
     black=player(2)
     game=board(LOCA_ARGC,white,black)
-    game.start()
+    game.start(surface)
 
 def disp(surface):
     surface.fill((255, 255, 255))  # 设置背景颜色为白色
