@@ -1,14 +1,24 @@
-import pygame as pg
+from pygame.image import load
+from pygame.display import update,flip,set_mode,set_icon,set_caption
+from pygame.draw import rect
+from pygame.event import get as event_get
+from pygame.mouse import get_pos
+from pygame import Rect
+from pygame import init as pg_init
+from pygame import QUIT,MOUSEBUTTONDOWN,MOUSEBUTTONUP
+from pygame.font import init as font_init,SysFont
 from random import choice
 from time import sleep
 # -*- coding: utf-8 -*-
+# -*- version:1.1 -*-
 #相关数据与图片初始化
 LOCA_ARGC=(554,532)
-WHITE_PIC=pg.image.load(".\\whit.png")
-BLACK_PIC=pg.image.load(".\\black.png")
-BACKGROUND_PIC=pg.image.load(".\\background.jpg")
-CHESSBOARD_PIC=pg.image.load(".\\chessboard.jpg")
-ICO=pg.image.load(".\\icon.jpg")
+WHITE_PIC=load(".\\whit.png")
+BLACK_PIC=load(".\\black.png")
+BACKGROUND_PIC=load(".\\background.jpg")
+CHESSBOARD_PIC=load(".\\chessboard.jpg")
+KELLNER_PIC=load('.\\kellner.png')
+ICO=load(".\\icon.jpg")
 COLOR={0:None,1:'白方',2:'黑方'}  # 定义颜色字典
 COLOR_PIC={0:None,1:WHITE_PIC,2:BLACK_PIC}
 
@@ -98,13 +108,13 @@ class board:
         # 具体可视化实现
         for i in range(15):
             for j in range(15):
-                pg.draw.rect(surface,
+                rect(surface,
                              (255,255,255),
-                             pg.Rect(i*self.x_dist+self.start_point[0]-self.bias,
+                             Rect(i*self.x_dist+self.start_point[0]-self.bias,
                                      j*self.y_dist+self.start_point[1]-self.bias,
                                      2*self.bias,
                                      2*self.bias))
-        pg.display.update()
+        update()
         # 下同self.place_piece
         while not done:
             pix_loca=list(player.place_piece())
@@ -121,7 +131,7 @@ class board:
                         surface.blit(COLOR_PIC[player.color], 
                                     (x*self.x_dist+self.start_point[0] - player.bias[player.color-1][0], 
                                     y*self.y_dist+self.start_point[1] - player.bias[player.color-1][1]))
-                        pg.display.update()
+                        update()
                         print(self.statue_board)
                         done =True
                         statue=[x,y]
@@ -149,7 +159,7 @@ class board:
                         surface.blit(COLOR_PIC[player.color], 
                                     (x*self.x_dist+self.start_point[0] - player.bias[player.color-1][0], 
                                     y*self.y_dist+self.start_point[1] - player.bias[player.color-1][1]))
-                        pg.display.update()
+                        update()
                         print(self.statue_board)
                         done =True
                         statue=[x,y]
@@ -169,31 +179,30 @@ class board:
             sleep(0.1)
             for m in range(2):
                 if turn[m]:
-                    turn_clear=pg.Rect(self.turn_disp_point[0],self.turn_disp_point[1],80,20) # 使用turn_clear对象覆盖原turn_statue文本
-                    pg.draw.rect(surface,(255,255,255),turn_clear)
-                    pg.display.flip()
-                    turn_statue=pg.font.SysFont("华文细黑",15).render(COLOR[self.player[m].color]+"回合",True,(0,0,0))
+                    turn_clear=Rect(self.turn_disp_point[0],self.turn_disp_point[1],80,20) # 使用turn_clear对象覆盖原turn_statue文本
+                    rect(surface,(255,255,255),turn_clear)
+                    flip()
+                    turn_statue=SysFont("华文细黑",15).render(COLOR[self.player[m].color]+"回合",True,(0,0,0))
                     surface.blit(turn_statue,self.turn_disp_point)
-                    pg.display.update()
+                    update()
                     cache=self.place_piece(self.player[m],surface)
                     self.statue_board[cache[0]][cache[1]]=self.player[m].color
                     if str(cache[0]) == 'False':
                         print('中断游戏')
                         done=True
                         game=False
+                        return 0
                     if self.check():
                         return(self.player[m].color)
                     turn.reverse()
-        if not done:
-            return 0
 
     def result(self,winner):
-        turn_clear=pg.Rect(self.turn_disp_point[0],self.turn_disp_point[1],80,20)
-        pg.draw.rect(surface,(255,255,255),turn_clear)
-        pg.display.flip()
-        winner_text=pg.font.SysFont("华文细黑",15).render(COLOR[winner]+"获胜，右上角退出游戏",True,(0,0,0))
+        turn_clear=Rect(self.turn_disp_point[0],self.turn_disp_point[1],80,20)
+        rect(surface,(255,255,255),turn_clear)
+        flip()
+        winner_text=SysFont("华文细黑",15).render(COLOR[winner]+"获胜，右上角退出游戏",True,(0,0,0))
         surface.blit(winner_text,self.turn_disp_point)
-        pg.display.update()
+        update()
         
 
 class player:
@@ -216,12 +225,12 @@ class player:
         loca=()
         done=False
         while not done:
-            for event in pg.event.get():
-                if event.type == pg.MOUSEBUTTONDOWN:
+            for event in event_get():
+                if event.type == MOUSEBUTTONDOWN:
                     print('get')
-                    loca = pg.mouse.get_pos()
+                    loca = get_pos()
                     done = True
-                elif event.type == pg.QUIT:
+                elif event.type == QUIT:
                     loca =(False,False)
                     done = True
         return loca
@@ -232,28 +241,32 @@ def welcome_msg():
     button_color = (255,255,255)
     label_text = "五子棋"
     button_text = "开始游戏"
+    info = "制作:@Mysl  图片资源:@龙文杰 "
     #相关对象初始化
     #ps:由于没有找到好的资源，暂时先用文本来代替
     #ps:之后肯定会来解决
-    board=pg.Rect(175,167,300,300)
-    button_obj = pg.font.SysFont('华文细黑',25).render(button_text, True, button_color)
-    button_bg = pg.Rect(223,343, 200, 50)  # 创建按钮矩形
-    label_obj = pg.font.SysFont('华文行楷', 75).render(label_text, True, label_color)
-    pg.draw.rect(surface,(255,255,255),board)
+    board=Rect(175,167,300,300)
+    button_obj = SysFont('华文细黑',25).render(button_text, True, button_color)
+    button_bg = Rect(223,343, 200, 50)  # 创建按钮矩形
+    label_obj = SysFont('华文行楷', 75).render(label_text, True, label_color)
+    info_obj = SysFont("华文细黑",15).render(info,True,(0,0,0))
+    rect(surface,(255,255,255),board)
     surface.blit(label_obj, (209,190))
-    pg.draw.rect(surface, (204,204,0), button_bg)  #
+    rect(surface, (204,204,0), button_bg)  #
     surface.blit(button_obj, (button_bg.x + 50, button_bg.y + 5))  # 绘制按钮文本
-    pg.display.update()  # 更新显示
+    surface.blit(KELLNER_PIC,(392,319))
+    surface.blit(info_obj,(20,628))
+    update()  # 更新显示
     start=False
     while not start:
-        for event in pg.event.get():
-            if event.type == pg.MOUSEBUTTONDOWN:
-                loca = pg.mouse.get_pos()
+        for event in event_get():
+            if event.type == MOUSEBUTTONDOWN:
+                loca = get_pos()
                 x=(button_bg.x+button_bg.width-loca[0])*(button_bg.x-loca[0])
                 y=(button_bg.y+button_bg.height-loca[1])*(button_bg.y-loca[1])
                 if x < 0 and y < 0:
                     surface.fill((0,0,0))
-                    pg.display.flip()
+                    flip()
                     start=True
 
             
@@ -276,21 +289,21 @@ def disp(surface):
     surface.fill((255, 255, 255))  # 设置背景颜色为白色
     surface.blit(BACKGROUND_PIC, (0, 0))  # 绘制背景图(ps:找不到什么好图，只能先用围棋图代替)
     surface.blit(CHESSBOARD_PIC, (20, 20))  # 绘制棋盘
-    pg.display.set_icon(ICO)  # 设置窗口图标
-    pg.display.set_caption("五子棋")  # 设置窗口标题为"五子棋"
-    pg.display.update()  # 更新显示
+    set_icon(ICO)  # 设置窗口图标
+    set_caption("五子棋")  # 设置窗口标题为"五子棋"
+    update()  # 更新显示
 
 done = False
-pg.init() #pygame 初始化
-pg.font.init()  # 初始化字体模块
-surface = pg.display.set_mode((652, 652))
+pg_init() #pygame 初始化
+font_init()  # 初始化字体模块
+surface = set_mode((652, 652))
 disp(surface)
 welcome_msg() 
 main()
 
 
 while not done:
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
+    for event in event_get():
+        if event.type == QUIT:
             print("退出游戏")
             done = True
